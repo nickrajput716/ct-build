@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card shadow-lg">
+            <div class="card-header bg-success text-white">
+                <h3 class="mb-0">
+                    <i class="fas fa-weight"></i> Log Your Weight
+                </h3>
+            </div>
+            <div class="card-body p-5">
+                <p class="text-muted mb-4">
+                    <i class="fas fa-info-circle"></i> 
+                    Track your weight regularly to monitor your progress
+                </p>
+                
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    <div class="mb-4">
+                        <label for="{{ form.weight.id_for_label }}" class="form-label fw-semibold">
+                            <i class="fas fa-weight-hanging"></i> Current Weight (kg) *
+                        </label>
+                        {{ form.weight }}
+                        {% if form.weight.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ form.weight.errors }}
+                            </div>
+                        {% endif %}
+                        <small class="text-muted">Enter your current weight in kilograms</small>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="{{ form.date.id_for_label }}" class="form-label fw-semibold">
+                            <i class="fas fa-calendar-alt"></i> Date *
+                        </label>
+                        {{ form.date }}
+                        {% if form.date.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ form.date.errors }}
+                            </div>
+                        {% endif %}
+                        <small class="text-muted">Select the date for this weight measurement</small>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="{{ form.notes.id_for_label }}" class="form-label fw-semibold">
+                            <i class="fas fa-sticky-note"></i> Notes (Optional)
+                        </label>
+                        {{ form.notes }}
+                        {% if form.notes.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ form.notes.errors }}
+                            </div>
+                        {% endif %}
+                        <small class="text-muted">Add any notes about your progress, mood, or diet</small>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="fas fa-save"></i> Log Weight
+                        </button>
+                        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times"></i> Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Tips Card -->
+        <div class="card shadow mt-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-lightbulb"></i> Weight Tracking Tips
+                </h5>
+            </div>
+            <div class="card-body">
+                <ul class="mb-0">
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success"></i> 
+                        <strong>Weigh yourself at the same time each day</strong> (preferably morning, before eating)
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success"></i> 
+                        <strong>Use the same scale</strong> for consistent measurements
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success"></i> 
+                        <strong>Track weekly</strong> - Daily fluctuations are normal
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success"></i> 
+                        <strong>Don't obsess</strong> - Focus on the overall trend
+                    </li>
+                    <li class="mb-0">
+                        <i class="fas fa-check text-success"></i> 
+                        <strong>Celebrate progress</strong> - Even small changes matter!
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Quick Stats Card -->
+        <div class="card shadow mt-4">
+            <div class="card-header bg-warning text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-bar"></i> Understanding Weight Changes
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-4">
+                        <div class="p-3 bg-light rounded">
+                            <i class="fas fa-smile fa-2x text-success mb-2"></i>
+                            <h6>Healthy Loss</h6>
+                            <p class="mb-0 small">0.5-1 kg/week</p>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="p-3 bg-light rounded">
+                            <i class="fas fa-balance-scale fa-2x text-info mb-2"></i>
+                            <h6>Maintenance</h6>
+                            <p class="mb-0 small">±0.5 kg/week</p>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="p-3 bg-light rounded">
+                            <i class="fas fa-arrow-up fa-2x text-primary mb-2"></i>
+                            <h6>Healthy Gain</h6>
+                            <p class="mb-0 small">0.25-0.5 kg/week</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="alert alert-info mt-3 mb-0">
+                    <small>
+                        <i class="fas fa-info-circle"></i> 
+                        <strong>Remember:</strong> Weight fluctuates due to water retention, hormones, and digestion. 
+                        Look at weekly averages, not daily changes.
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control, .form-select, textarea {
+        border: 2px solid #e0e0e0;
+        transition: all 0.3s;
+    }
+    
+    .form-control:focus, .form-select:focus, textarea:focus {
+        border-color: #28a745;
+        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    }
+    
+    textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+    
+    .card {
+        transition: transform 0.2s;
+    }
+    
+    .card:hover {
+        transform: translateY(-2px);
+    }
+</style>
+
+<script>
+    // Set today's date as default
+    document.addEventListener('DOMContentLoaded', function() {
+        const dateInput = document.querySelector('input[type="date"]');
+        if (dateInput && !dateInput.value) {
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.value = today;
+        }
+    });
+</script>
+{% endblock %}

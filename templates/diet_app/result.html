@@ -1,0 +1,311 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="text-center text-white mb-4">
+        <h1 class="display-4">
+            <i class="fas fa-check-circle"></i> Your Personalized Diet Plan
+        </h1>
+        <p class="lead">AI-powered recommendations based on your profile</p>
+    </div>
+    
+    <div class="row">
+        <!-- Health Metrics Sidebar -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow-lg sticky-top" style="top: 20px;">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-chart-pie"></i> Your Health Metrics
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- BMI Display -->
+                    <div class="metric-box mb-3">
+                        <h2 class="mb-0">{{ result.bmi }}</h2>
+                        <p class="mb-0">Body Mass Index</p>
+                    </div>
+                    
+                    <!-- BMI Category -->
+                    <div class="alert alert-info text-center mb-3">
+                        <strong>Category:</strong><br>
+                        <span class="badge badge-category {{ result.category|lower }} fs-5 mt-2">
+                            {{ result.category }}
+                        </span>
+                    </div>
+                    
+                    <!-- ML Confidence (if available) -->
+                    {% if result.confidence %}
+                    <div class="alert alert-success text-center mb-3">
+                        <small><i class="fas fa-brain"></i> ML Confidence</small><br>
+                        <strong>{{ result.confidence }}%</strong>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Diet Type Badge -->
+                    <div class="alert alert-warning text-center mb-3">
+                        <strong>Diet Type:</strong><br>
+                        <span class="badge diet-badge diet-{{ result.diet_type }} fs-5 mt-2">
+                            {% if result.diet_type == 'veg' %}
+                                <i class="fas fa-leaf"></i> Vegetarian
+                            {% elif result.diet_type == 'nonveg' %}
+                                <i class="fas fa-drumstick-bite"></i> Non-Vegetarian
+                            {% else %}
+                                <i class="fas fa-seedling"></i> Vegan
+                            {% endif %}
+                        </span>
+                    </div>
+                    
+                    <hr>
+                    
+                    <!-- Calorie Information -->
+                    <div class="mb-3">
+                        <label class="text-muted small mb-1">
+                            <i class="fas fa-fire"></i> Base Calories (TDEE)
+                        </label>
+                        <h4 class="text-primary mb-0">{{ result.tdee }} kcal/day</h4>
+                        <small class="text-muted">Total Daily Energy Expenditure</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="text-muted small mb-1">
+                            <i class="fas fa-apple-alt"></i> Recommended Daily
+                        </label>
+                        <h4 class="text-success mb-0">{{ result.recommended_calories }} kcal/day</h4>
+                        <small class="text-muted">Adjusted for your {{ result.goal }} goal</small>
+                    </div>
+                    
+                    <hr>
+                    
+                    <!-- Goal Badge -->
+                    <div class="text-center">
+                        <span class="badge bg-primary fs-6">
+                            <i class="fas fa-bullseye"></i> Goal: 
+                            {% if result.goal == 'lose' %}
+                                Lose Weight
+                            {% elif result.goal == 'gain' %}
+                                Gain Weight
+                            {% else %}
+                                Maintain Weight
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Diet Plan Content -->
+        <div class="col-lg-8">
+            <!-- Diet Plan Card -->
+            <div class="card shadow-lg mb-4">
+                <div class="card-header bg-success text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-utensils"></i> {{ result.diet_plan.title }}
+                    </h3>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Daily Meal Plan -->
+                    <h4 class="mb-4">
+                        <i class="fas fa-clock"></i> Your Daily Meal Plan
+                    </h4>
+                    
+                    {% for meal in result.diet_plan.meals %}
+                    <div class="meal-card">
+                        <i class="fas fa-check-circle text-success"></i>
+                        {{ meal }}
+                    </div>
+                    {% endfor %}
+                    
+                    <!-- Important Tips Section -->
+                    <h4 class="mt-5 mb-4">
+                        <i class="fas fa-lightbulb"></i> Important Tips for Success
+                    </h4>
+                    
+                    {% for tip in result.diet_plan.tips %}
+                    <div class="tip-card">
+                        <i class="fas fa-star text-warning"></i>
+                        {{ tip }}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Macronutrient Breakdown Card -->
+            <div class="card shadow-lg mb-4">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-chart-pie"></i> Recommended Macronutrient Distribution
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-4 mb-3">
+                            <div class="p-3 bg-light rounded">
+                                <i class="fas fa-bread-slice fa-3x text-warning mb-2"></i>
+                                <h5>Carbohydrates</h5>
+                                <h3 class="text-warning mb-2">45-65%</h3>
+                                <p class="mb-0 text-muted small">
+                                    <script>
+                                        document.write(Math.round({{ result.recommended_calories }} * 0.45) + '-' + Math.round({{ result.recommended_calories }} * 0.65) + ' kcal');
+                                    </script>
+                                    <noscript>~{{ result.recommended_calories|floatformat:0 }} kcal range</noscript>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="p-3 bg-light rounded">
+                                <i class="fas fa-drumstick-bite fa-3x text-danger mb-2"></i>
+                                <h5>Protein</h5>
+                                <h3 class="text-danger mb-2">10-35%</h3>
+                                <p class="mb-0 text-muted small">
+                                    <script>
+                                        document.write(Math.round({{ result.recommended_calories }} * 0.15) + '-' + Math.round({{ result.recommended_calories }} * 0.30) + ' kcal');
+                                    </script>
+                                    <noscript>~{{ result.recommended_calories|floatformat:0 }} kcal range</noscript>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="p-3 bg-light rounded">
+                                <i class="fas fa-cheese fa-3x text-success mb-2"></i>
+                                <h5>Healthy Fats</h5>
+                                <h3 class="text-success mb-2">20-35%</h3>
+                                <p class="mb-0 text-muted small">
+                                    <script>
+                                        document.write(Math.round({{ result.recommended_calories }} * 0.25) + '-' + Math.round({{ result.recommended_calories }} * 0.35) + ' kcal');
+                                    </script>
+                                    <noscript>~{{ result.recommended_calories|floatformat:0 }} kcal range</noscript>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Hydration Card -->
+            <div class="card shadow-lg mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-tint"></i> Daily Hydration Goal
+                    </h4>
+                </div>
+                <div class="card-body text-center">
+                    <i class="fas fa-glass-water fa-4x text-info mb-3"></i>
+                    <h2 class="text-primary mb-3">8-10 Glasses</h2>
+                    <p class="mb-0">
+                        <strong>2-3 Liters of Water Daily</strong><br>
+                        <small class="text-muted">Proper hydration is essential for metabolism and overall health</small>
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="card shadow-lg mb-4">
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <a href="{% url 'calculate_diet' %}" class="btn btn-outline-primary w-100 btn-lg">
+                                <i class="fas fa-redo"></i> Calculate Again
+                            </a>
+                        </div>
+                        
+                        {% if user.is_authenticated %}
+                        <div class="col-md-6">
+                            <a href="{% url 'dashboard' %}" class="btn btn-primary w-100 btn-lg">
+                                <i class="fas fa-tachometer-alt"></i> Go to Dashboard
+                            </a>
+                        </div>
+                        {% else %}
+                        <div class="col-md-6">
+                            <a href="{% url 'register' %}" class="btn btn-success w-100 btn-lg">
+                                <i class="fas fa-user-plus"></i> Register to Save Progress
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Disclaimer Card -->
+            <div class="card shadow-lg border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="fas fa-exclamation-triangle"></i> Important Disclaimer
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li>This is a general dietary recommendation based on calculations and ML predictions</li>
+                        <li>Individual needs may vary based on medical conditions, medications, and metabolism</li>
+                        <li>Always consult with a healthcare professional or registered dietitian before starting any diet plan</li>
+                        <li>Monitor your progress and adjust as needed</li>
+                        <li>If you have any chronic conditions (diabetes, heart disease, etc.), seek professional advice</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .meal-card {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        padding: 18px;
+        border-radius: 12px;
+        margin-bottom: 15px;
+        border-left: 5px solid #667eea;
+        font-size: 1.05rem;
+        transition: all 0.3s;
+    }
+    
+    .meal-card:hover {
+        transform: translateX(5px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .tip-card {
+        background: #fff;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 12px;
+        border-left: 4px solid #00b894;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        transition: all 0.3s;
+    }
+    
+    .tip-card:hover {
+        transform: translateX(5px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .metric-box {
+        text-align: center;
+        padding: 25px;
+        background: var(--primary-gradient);
+        color: white;
+        border-radius: 15px;
+    }
+    
+    .metric-box h2 {
+        font-size: 3rem;
+        font-weight: bold;
+        margin: 0;
+    }
+    
+    .metric-box p {
+        font-size: 1.1rem;
+        margin: 8px 0 0 0;
+        font-weight: 600;
+    }
+    
+    .sticky-top {
+        position: sticky;
+        z-index: 100;
+    }
+    
+    @media (max-width: 991px) {
+        .sticky-top {
+            position: relative;
+        }
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,38 @@
+======================================================================
+ML MODEL TRAINING SUMMARY
+======================================================================
+
+
+BMI Classifier
+----------------------------------------------------------------------
+Type: Random Forest Classification
+Features:
+  - Gender
+  - Height
+  - Weight
+Classes:
+  - Underweight
+  - Normal
+  - Overweight
+  - Obese
+Visualizations:
+  - bmi_confusion_matrix.png
+  - bmi_learning_curve.png
+  - bmi_feature_importance.png
+
+
+TDEE Regressor
+----------------------------------------------------------------------
+Type: Random Forest Regression
+Features:
+  - Age
+  - Gender
+  - Weight
+  - Height
+  - Activity Level
+Target: Daily Calorie Expenditure (TDEE)
+Visualizations:
+  - tdee_regression_plot.png
+  - tdee_learning_curve.png
+  - tdee_feature_importance.png
+

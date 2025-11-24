@@ -1,0 +1,308 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1 class="text-white text-center mb-4">
+        <i class="fas fa-tachometer-alt"></i> Welcome, {{ user.username }}!
+    </h1>
+    
+    <!-- Profile Overview -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <i class="fas fa-user fa-3x text-primary mb-3"></i>
+                    <h5>Your Profile</h5>
+                    <p class="mb-2"><strong>Age:</strong> {{ profile.age }} years</p>
+                    <p class="mb-2"><strong>Height:</strong> {{ profile.height }} cm</p>
+                    <p class="mb-0"><strong>Weight:</strong> {{ profile.weight }} kg</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-3">
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <i class="fas fa-bullseye fa-3x text-success mb-3"></i>
+                    <h5>Your Goal</h5>
+                    <p class="mb-2">
+                        <span class="badge bg-success">{{ profile.get_goal_display }}</span>
+                    </p>
+                    <p class="mb-0"><strong>Activity:</strong> {{ profile.get_activity_level_display }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-3">
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <i class="fas fa-utensils fa-3x text-warning mb-3"></i>
+                    <h5>Diet Type</h5>
+                    <p class="mb-0">
+                        <span class="badge diet-badge diet-{{ profile.diet_type }}">
+                            {{ profile.get_diet_type_display }}
+                        </span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-3">
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <i class="fas fa-chart-line fa-3x text-info mb-3"></i>
+                    <h5>Progress</h5>
+                    {% if progress_data %}
+                        <p class="mb-2">
+                            <strong>Started:</strong> {{ progress_data.initial_weight }} kg
+                        </p>
+                        <p class="mb-0">
+                            <strong>Change:</strong> 
+                            <span class="{% if progress_data.weight_change < 0 %}text-success{% else %}text-danger{% endif %}">
+                                {{ progress_data.weight_change|floatformat:1 }} kg
+                            </span>
+                        </p>
+                    {% else %}
+                        <p class="text-muted small">Log weight to track progress</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Latest Recommendation -->
+    {% if latest_recommendation %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-star"></i> Your Latest Recommendation
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 text-center mb-3">
+                            <div class="metric-box">
+                                <h3>{{ latest_recommendation.bmi }}</h3>
+                                <p>BMI</p>
+                            </div>
+                            <span class="badge badge-category {{ latest_recommendation.bmi_category|lower }}">
+                                {{ latest_recommendation.bmi_category }}
+                            </span>
+                        </div>
+                        <div class="col-md-3 text-center mb-3">
+                            <div class="metric-box" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                                <h3>{{ latest_recommendation.tdee }}</h3>
+                                <p>TDEE (calories)</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center mb-3">
+                            <div class="metric-box" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                                <h3>{{ latest_recommendation.recommended_calories }}</h3>
+                                <p>Recommended</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center mb-3">
+                            <div class="metric-box" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                                <h3>{{ latest_recommendation.created_at|date:"M d" }}</h3>
+                                <p>Date</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0"><i class="fas fa-bolt"></i> Quick Actions</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'calculate_diet' %}" class="btn btn-primary btn-lg w-100">
+                                <i class="fas fa-calculator fa-2x mb-2"></i>
+                                <br>Calculate New Plan
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'add_weight' %}" class="btn btn-success btn-lg w-100">
+                                <i class="fas fa-weight fa-2x mb-2"></i>
+                                <br>Log Weight
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'profile' %}" class="btn btn-info btn-lg w-100">
+                                <i class="fas fa-user-edit fa-2x mb-2"></i>
+                                <br>Edit Profile
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'model_analytics' %}" class="btn btn-warning btn-lg w-100">
+                                <i class="fas fa-brain fa-2x mb-2"></i>
+                                <br>Model Analytics
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Two Column Layout -->
+    <div class="row">
+        <!-- Recent Recommendations -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history"></i> Recent Recommendations
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if recommendations %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>BMI</th>
+                                        <th>Category</th>
+                                        <th>Calories</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for rec in recommendations %}
+                                    <tr>
+                                        <td>{{ rec.created_at|date:"M d, Y" }}</td>
+                                        <td>{{ rec.bmi }}</td>
+                                        <td>
+                                            <span class="badge badge-category {{ rec.bmi_category|lower }}">
+                                                {{ rec.bmi_category }}
+                                            </span>
+                                        </td>
+                                        <td>{{ rec.recommended_calories }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="text-center mt-3">
+                            <a href="{% url 'history' %}" class="btn btn-outline-info">
+                                <i class="fas fa-list"></i> View All History
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info text-center">
+                            <i class="fas fa-info-circle"></i> No recommendations yet. 
+                            <a href="{% url 'calculate_diet' %}">Calculate your first diet plan!</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Weight Log -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-weight"></i> Weight Tracking
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if weight_logs %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Weight (kg)</th>
+                                        <th>Change</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for log in weight_logs %}
+                                    <tr>
+                                        <td>{{ log.date|date:"M d, Y" }}</td>
+                                        <td>{{ log.weight }}</td>
+                                        <td>
+                                            {% if forloop.counter < weight_logs|length %}
+                                                {% with prev_weight=weight_logs|slice:":"|last.weight %}
+                                                    {% if log.weight < prev_weight %}
+                                                        <span class="text-success">
+                                                            <i class="fas fa-arrow-down"></i>
+                                                        </span>
+                                                    {% elif log.weight > prev_weight %}
+                                                        <span class="text-danger">
+                                                            <i class="fas fa-arrow-up"></i>
+                                                        </span>
+                                                    {% else %}
+                                                        <span class="text-muted">-</span>
+                                                    {% endif %}
+                                                {% endwith %}
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="text-center mt-3">
+                            <a href="{% url 'add_weight' %}" class="btn btn-outline-warning">
+                                <i class="fas fa-plus"></i> Log New Weight
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-warning text-center">
+                            <i class="fas fa-exclamation-triangle"></i> No weight logs yet. 
+                            <a href="{% url 'add_weight' %}">Start tracking your weight!</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Progress Chart Placeholder -->
+    {% if progress_data %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-line"></i> Your Progress Summary
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-4">
+                            <h3 class="text-primary">{{ progress_data.initial_weight }} kg</h3>
+                            <p class="text-muted">Starting Weight</p>
+                        </div>
+                        <div class="col-md-4">
+                            <h3 class="text-success">{{ progress_data.current_weight }} kg</h3>
+                            <p class="text-muted">Current Weight</p>
+                        </div>
+                        <div class="col-md-4">
+                            <h3 class="{% if progress_data.weight_change < 0 %}text-success{% else %}text-danger{% endif %}">
+                                {{ progress_data.weight_change|floatformat:1 }} kg
+                            </h3>
+                            <p class="text-muted">Total Change ({{ progress_data.change_percentage }}%)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

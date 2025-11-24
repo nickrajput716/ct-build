@@ -1,0 +1,247 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="text-center mb-4">
+        <h1 class="text-white">
+            <i class="fas fa-history"></i> Your Diet Recommendation History
+        </h1>
+        <p class="text-white-50">Track your journey and see how your recommendations have evolved</p>
+    </div>
+    
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h4 class="mb-0">
+                        <i class="fas fa-list"></i> All Recommendations
+                    </h4>
+                </div>
+                <div class="col-auto">
+                    <a href="{% url 'calculate_diet' %}" class="btn btn-light btn-sm">
+                        <i class="fas fa-plus"></i> New Calculation
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            {% if recommendations %}
+                <!-- Summary Stats -->
+                <div class="row mb-4">
+                    <div class="col-md-3 mb-3">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h3 class="text-primary">{{ recommendations.count }}</h3>
+                                <p class="mb-0 text-muted">Total Plans</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h3 class="text-success">{{ recommendations.first.bmi }}</h3>
+                                <p class="mb-0 text-muted">Latest BMI</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h3 class="text-warning">{{ recommendations.first.recommended_calories }}</h3>
+                                <p class="mb-0 text-muted">Latest Calories</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h3 class="text-info">
+                                    <span class="badge badge-category {{ recommendations.first.bmi_category|lower }}">
+                                        {{ recommendations.first.bmi_category }}
+                                    </span>
+                                </h3>
+                                <p class="mb-0 text-muted">Current Category</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recommendations Table -->
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped">
+                        <thead class="table-dark">
+                            <tr>
+                                <th><i class="fas fa-calendar"></i> Date</th>
+                                <th><i class="fas fa-chart-line"></i> BMI</th>
+                                <th><i class="fas fa-tag"></i> Category</th>
+                                <th><i class="fas fa-fire"></i> TDEE</th>
+                                <th><i class="fas fa-apple-alt"></i> Recommended</th>
+                                <th><i class="fas fa-running"></i> Activity</th>
+                                <th><i class="fas fa-bullseye"></i> Goal</th>
+                                <th><i class="fas fa-utensils"></i> Diet Type</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for rec in recommendations %}
+                            <tr>
+                                <td>
+                                    <strong>{{ rec.created_at|date:"M d, Y" }}</strong><br>
+                                    <small class="text-muted">{{ rec.created_at|time:"h:i A" }}</small>
+                                </td>
+                                <td>
+                                    <strong class="fs-5">{{ rec.bmi }}</strong>
+                                </td>
+                                <td>
+                                    <span class="badge badge-category {{ rec.bmi_category|lower }}">
+                                        {{ rec.bmi_category }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <strong>{{ rec.tdee }}</strong> cal
+                                </td>
+                                <td>
+                                    <strong class="text-success">{{ rec.recommended_calories }}</strong> cal
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">
+                                        {{ rec.get_activity_level_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary">
+                                        {{ rec.get_goal_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge diet-badge diet-{{ rec.diet_type }}">
+                                        {% if rec.diet_type == 'veg' %}
+                                            <i class="fas fa-leaf"></i> Veg
+                                        {% elif rec.diet_type == 'nonveg' %}
+                                            <i class="fas fa-drumstick-bite"></i> Non-Veg
+                                        {% else %}
+                                            <i class="fas fa-seedling"></i> Vegan
+                                        {% endif %}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Timeline View (Alternative) -->
+                <div class="mt-5">
+                    <h4 class="mb-4">
+                        <i class="fas fa-stream"></i> Timeline View
+                    </h4>
+                    <div class="timeline">
+                        {% for rec in recommendations %}
+                        <div class="timeline-item mb-4">
+                            <div class="row">
+                                <div class="col-md-2 text-end">
+                                    <strong>{{ rec.created_at|date:"M d, Y" }}</strong><br>
+                                    <small class="text-muted">{{ rec.created_at|time:"h:i A" }}</small>
+                                </div>
+                                <div class="col-md-1 text-center">
+                                    <div class="timeline-badge bg-primary">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="card shadow-sm">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <strong>BMI:</strong> {{ rec.bmi }}<br>
+                                                    <span class="badge badge-category {{ rec.bmi_category|lower }}">
+                                                        {{ rec.bmi_category }}
+                                                    </span>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <strong>TDEE:</strong> {{ rec.tdee }} cal<br>
+                                                    <strong>Recommended:</strong> {{ rec.recommended_calories }} cal
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <strong>Goal:</strong> {{ rec.get_goal_display }}<br>
+                                                    <strong>Activity:</strong> {{ rec.get_activity_level_display }}
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <strong>Diet Type:</strong><br>
+                                                    <span class="badge diet-badge diet-{{ rec.diet_type }}">
+                                                        {{ rec.get_diet_type_display }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-inbox fa-5x text-muted mb-4"></i>
+                    <h4>No Recommendations Yet</h4>
+                    <p class="text-muted mb-4">
+                        You haven't calculated any diet plans yet. Let's get started!
+                    </p>
+                    <a href="{% url 'calculate_diet' %}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-calculator"></i> Calculate Your First Diet Plan
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+        <div class="card-footer text-center">
+            <a href="{% url 'dashboard' %}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .timeline {
+        position: relative;
+    }
+    
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: #667eea;
+        transform: translateX(-50%);
+    }
+    
+    .timeline-badge {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+        margin: 0 auto;
+    }
+    
+    .table-hover tbody tr:hover {
+        background-color: rgba(102, 126, 234, 0.1);
+    }
+    
+    @media (max-width: 768px) {
+        .timeline::before {
+            left: 20px;
+        }
+        
+        .timeline-item .col-md-2 {
+            text-align: left !important;
+        }
+    }
+</style>
+{% endblock %}
