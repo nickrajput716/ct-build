@@ -1,7 +1,7 @@
 # CT-Build: AI-Powered Diet Recommendation System
 
 ![Project Banner](screenshots/5.png)  
-*(Replace with an actual banner image for better visuals)*
+
 
 ## Overview
 
